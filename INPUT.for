@@ -34,6 +34,7 @@ C
       REAL,ALLOCATABLE,DIMENSION(:)::RMULADS  
       REAL,ALLOCATABLE,DIMENSION(:)::ADDADS 
       INTEGER      IPMC 
+      LOGICAL      lwd,le2 ! GEOSR x-species. Check file WINDCOEFF.INP, EFDC2.INP exist jgcho 2016.10.21
       ALLOCATE(RMULADS(NSTM))  
       ALLOCATE(ADDADS(NSTM))  
       RMULADS=0.
@@ -1857,14 +1858,17 @@ C
         ENDDO  
       ENDIF  
 C  
+!{ Public EFDC-NIER 161214 jgcho
 !{GeoSR, 2014.07.04 YSSONG, WIND DRAG COEFF.
-        NCARD='101'
-        CALL SEEK('C101')
-        READ(1,*,IOSTAT=ISO) ISWIND, ISICE  !{GeoSR, 2015.01.15 JHLEE, NEGATIVE WATER TEMPERATURE PROBLEM
-        WRITE(7,1002)NCARD
-        WRITE(7,*)ISWIND, ISICE  !{GeoSR, 2015.01.15 JHLEE, NEGATIVE WATER TEMPERATURE PROBLEM
-        IF(ISO.GT.0) GOTO 100                  
+!        NCARD='101'
+!        CALL SEEK('C101')
+!        READ(1,*,IOSTAT=ISO) ISWIND, ISICE  !{GeoSR, 2015.01.15 JHLEE, NEGATIVE WATER TEMPERATURE PROBLEM
+!        WRITE(7,1002)NCARD
+!        WRITE(7,*)ISWIND, ISICE  !{GeoSR, 2015.01.15 JHLEE, NEGATIVE WATER TEMPERATURE PROBLEM
+!        IF(ISO.GT.0) GOTO 100                  
 !} GeoSR, 2014.07.04 YSSONG, WIND DRAG COEFF.
+!} Public EFDC-NIER 161214 jgcho
+
       NTS=NTC*NTSPTC  
       NBVSFP=NTC*NTSPTC  
       NSVSFP=0  
@@ -1908,6 +1912,15 @@ C
    22 FORMAT (A80)  
    23 FORMAT (1X,A80)  
 C  
+!{ GEOSR, Check file WINDCOEFF.INP exist jgcho 2016.10.21
+      inquire (file='WINDCOEFF.INP', exist = lwd)
+      if(.not.lwd) then ! Not exist
+        ISWIND=0
+        goto 9883
+      else
+        ISWIND=1
+      endif
+!} GEOSR, Check file WINDCOEFF.INP exist jgcho 2016.10.21
 !{GeoSR, 2014.07.04 YSSONG, WIND DRAG COEFF.
       IF(ISWIND.EQ.1)THEN
       PRINT *,'READING WINDCOEFF.INP'
@@ -4630,6 +4643,35 @@ C
  7121 FORMAT('  READ ERROR FOR FILE VEGSER.INP ')  
       STOP  
  7122 CONTINUE  
+
+!{ GEOSR, Check file EFDC2.INP read jgcho 2016.10.21
+      inquire (file='EFDC2.INP', exist = le2)
+      if(.not.le2) then
+        goto 3000
+      endif
+
+      PRINT *,'READING THE extra EFDC CONTROL FILE: EFDC2.INP'
+      OPEN(1,FILE='EFDC2.INP',STATUS='UNKNOWN')  
+C  
+C1**  READ TITLE CARD
+      NCARD='1'  
+      CALL SEEK('C1')  
+      READ(1,*,IOSTAT=ISO) ISICE
+      WRITE(7,4002)NCARD  
+      WRITE(7,*) ISICE
+      IF(ISO.GT.0) GOTO 400  
+      
+      CLOSE(1)  
+      goto 3000
+
+  400 WRITE(6,4001)NCARD  
+      WRITE(8,4001)NCARD  
+      WRITE(7,4001)NCARD  
+ 4001 FORMAT(/,'READ ERROR FROM FILE EFDC2.INP ON CARD ',A3/)  
+ 4002 FORMAT(/,'INPUT ECHO NCARD = ',A/)  
+      STOP  
+!} GEOSR, Check file EFDC2.INP read jgcho 2016.10.21
+      
       GOTO 3000  
 C  
 C **  WRITE READ ERROR FOR OTHER INPUT FILES AND TERMINATE RUN  

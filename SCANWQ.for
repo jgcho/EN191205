@@ -11,6 +11,7 @@
       LOGICAL*4     BFLAG
       INTEGER*4     I,J,K,ITMP,NW
       REAL*4        XPSQ
+      LOGICAL       lwc2 ! GEOSR x-species. Check file WQ3DWC2.INP exist jgcho 2016.10.21
       
       WRITE(*,'(A)')'SCANNING INPUT FILE: WQ3DWC.INP'
       INFILE='WQ3DWC.INP'
@@ -132,6 +133,13 @@ C
 
       IPMC=0
 
+!{ GEOSR x-species. Check file WQ3DWC2.INP exist jgcho 2016.10.21
+      inquire (file='WQ3DWC2.INP', exist = lwc2)
+      if(.not.lwc2) then
+        NXSP=0
+        goto 119
+      endif
+!} GEOSR x-species. Check file WQ3DWC2.INP exist jgcho 2016.10.21
 !{ GEOSR x-species. Check WQ3DWC2.INP jgcho 2015.9.16
       WRITE(*,'(A)')'SCANNING INPUT FILE: WQ3DWC2.INP'
       OPEN(1,FILE='WQ3DWC2.INP',STATUS='UNKNOWN')  
@@ -146,6 +154,7 @@ C
       endif
       CLOSE(1)
 !} GEOSR x-species. Check WQ3DWC2.INP jgcho 2015.9.16
+  119 continue ! GEOSR x-species. Check file WQ3DWC2.INP exist jgcho 2016.10.21
 
    50 RETURN
    
