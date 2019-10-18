@@ -2177,9 +2177,38 @@ C ***     MG/L FOR 1-19, TAM-MOLES/L, AND FCB-MPN/L
       
 
     !} GEOSR X-species CWQSRX##.INP read : jgcho 2015.11.04
+    !{ GEOSR X-species WQ3DWC2.INP, algae sed & erision read : jgcho 2017.5.30
+! *** C22 WQ3DWC2.INP
+    !} GEOSR X-species WQ3DWC2.INP, algae sed & erision read : jgcho 2017.5.30
+      IF(ISSKIP .GT. 0) CALL SKIPCOMM(1,CCMRM)  
+      IF(ISSKIP .EQ. 0) READ(1,*)  
+      write(2,*) 'C22'
+      LQSED = 0
+      DO nsp=1,NXSP
+        READ(1,*) iQSED(nsp),TAUDC(nsp),TAUEC(nsp),ERC(nsp)
+     &           ,WQSEDALPH(nsp)
+        write(2,*) iQSED(nsp),TAUDC(nsp),TAUEC(nsp),ERC(nsp)
+     &           ,WQSEDALPH(nsp)
+        if (iQSED(nsp).eq.1) LQSED = 1
+      ENDDO
+      write(2,*) LQSED
+      write(2,*) 
+    !{ GEOSR X-species CWQSRX##.INP read : jgcho 2017.5.30
+! *** C23 WQ3DWC2.INP
+    !} GEOSR X-species WQ3DWC2.INP, Algal growth rate for VEL.
+      IF(ISSKIP .GT. 0) CALL SKIPCOMM(1,CCMRM)  
+      IF(ISSKIP .EQ. 0) READ(1,*)  
+      write(2,*) 'C23'
+      DO nsp=1,NXSP
+        READ(1,*) ialv(nsp),albeta(nsp),alalph(nsp)
+        write(2,*) ialv(nsp),albeta(nsp),alalph(nsp)
+      ENDDO
+      write(2,*) 
+    !{ GEOSR X-species WQ3DWC2.INP, Algal growth rate for VEL. read : jgcho 2017.12.03
 ! *** C100 WQ3DWC2.INP
       IF(ISSKIP .GT. 0) CALL SKIPCOMM(1,CCMRM)  
       IF(ISSKIP .EQ. 0) READ(1,*)  
+      write(2,*) 'C100'
       READ(1,*) IWQBENOX,DOXCRT
       write(2,*) IWQBENOX,DOXCRT
       write(2,*)      
@@ -2424,12 +2453,12 @@ C
         CLOSE(1)  
       ENDIF  
 
-!      IF(ISCYANO.EQ.1)THEN
-!        OPEN(1,FILE='CYANO.OUT')  
-!        CLOSE(1,STATUS='DELETE')
-!        OPEN(1,FILE='CYANO.OUT')  
-!        CLOSE(1)
-!      ENDIF
+      IF(ISCYANO.EQ.1)THEN
+        OPEN(1,FILE='CYANO.OUT')  
+        CLOSE(1,STATUS='DELETE')
+        OPEN(1,FILE='CYANO.OUT')  
+        CLOSE(1)
+      ENDIF
 !} GeoSR Bentic-cyano : JHLEE 2015.10.12
       
       CLOSE(2)  

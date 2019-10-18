@@ -169,7 +169,7 @@ C
       CLOSE(8,STATUS='DELETE')  
       CLOSE(9,STATUS='DELETE')  
       OPEN(7,FILE='EFDC.OUT',STATUS='UNKNOWN')  
-      write(7,*) 'Modified by GEOSR Public EFDC-NIER 161215' !GEOSR 2016.10.06 jgcho
+      write(7,*) 'Modified by GEOSR Public EFDC-NIER 191018' !GEOSR 2016.10.06 jgcho
       OPEN(8,FILE='EFDCLOG.OUT',STATUS='UNKNOWN')  
       OPEN(9,FILE='TIME.LOG',STATUS='UNKNOWN')  
 

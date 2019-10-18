@@ -2301,6 +2301,21 @@ C
       ALLOCATE(LightAVG0(LCMWQ,NNAT))
 !} GeoSR Bentic-cyano : JHLEE 2015.10.12
 
+!{ GEOSR Cyano Sed : jgcho 2016.08.10
+      ALLOCATE(WQCSED(LCMWQ,NXSP))
+      ALLOCATE(iQSED(NXSP))
+      ALLOCATE(TAUDC(NXSP))
+      ALLOCATE(TAUEC(NXSP))
+      ALLOCATE(ERC(NXSP))
+      ALLOCATE(WQSEDALPH(NXSP))
+!} GEOSR Cyano Sed : jgcho 2016.08.10
+
+!{ GEOSR  Algal growth rate for VEL. : jgcho 2017.12.03
+      ALLOCATE(ialv(NXSP))
+      ALLOCATE(albeta(NXSP))
+      ALLOCATE(alalph(NXSP))
+!} GEOSR  Algal growth rate for VEL. : jgcho 2017.12.03
+
       RETURN  
       END  
 

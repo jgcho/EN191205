@@ -397,16 +397,25 @@ C
           ENDIF  
           WQPD(L) = WQPMD(IMWQZT(L))*WQF1ND*WQF2ID*WQTDGD(IWQT(L))  
           WQPG(L) = WQPMG(IMWQZT(L))*WQF1NG*WQF2IG*WQTDGG(IWQT(L))  
+
 !{ GEOSR X-species : jgcho 2015.09.25
           do nsp=1,NXSP
+            !{ GEOSR X-species. Algal growth rate for VEL. : jgcho 2017.12.03
+            WQLVF=1.0
+            if (ialv(nsp).eq.1) then
+                WQVEL=SQRT(U(L,K)*U(L,K) + V(L,K)*V(L,K))
+                WQLVF=exp(((WQVEL-alalph(nsp))*(WQVEL-alalph(nsp)))*-1.
+     &                /albeta(nsp))
+            endif
+            !} GEOSR X-species. Algal growth rate for VEL. : jgcho 2017.12.03
             IF(IWQSTOX.EQ.1 .and. IWQX(nsp).eq.1)THEN  
               WQF4SC = WQSTOXX(nsp) / (WQSTOXX(nsp)
      &              + SWQ(L)*SWQ(L)+1.E-12)  
               WQPX(L,nsp)=WQPMX(IMWQZT(L),nsp)*WQF1NX(nsp)*WQF2IX(nsp)
-     &            *WQTDGX(IWQT(L),nsp)*WQF4SC  
+     &            *WQTDGX(IWQT(L),nsp)*WQF4SC*WQLVF
             ENDIF  
             WQPX(L,nsp) = WQPMX(IMWQZT(L),nsp)*WQF1NX(nsp)*WQF2IX(nsp)
-     &                   *WQTDGX(IWQT(L),nsp)  
+     &                   *WQTDGX(IWQT(L),nsp)*WQLVF
           enddo
 !} GEOSR X-species : jgcho 2015.09.25
 C  
@@ -755,13 +764,32 @@ C
             ENDIF
 !}            
             WQKK(L) = 1.0 / (1.0 - WQA1C)  
+
+            !{ GEOSR X-species Cyano Sed : jgcho 2016.9.7
+            TAUBCQ=QQ(L,0)/CTURB2*1000. ! SSEDTOX.for ln 503
+            !} GEOSR X-species Cyano Sed : jgcho 2016.9.7
+            
             !{ GEOSR X-species STOKES : jgcho 2015.10.13
               do nsp=1,NXSP
                 if (IWQX(nsp).eq.1) then ! cyano
                   WQACX(nsp)=(WQPX(L,nsp)-WQBMX(L,nsp)-WQPRX(L,nsp))
      &                       *DTWQO2                                 ! GEOSR X-species : jgcho 2015.10.08
+                  WQCSED(L,nsp)=WQCSED(L,nsp) + 
+     &                  -1.*WQSEDALPH(nsp)*WQCSED(L,nsp)*DTWQO2   ! GEOSR X-species SED : jgcho 2016.11.17
                   IF(WQALSETX(L,K,nsp).GT.0.0)THEN                   !{ GEOSR STOKES : YSSONG 2015.08.18  !!!! SINK WQALSET(L,K,1) ! GEOSR X-species : jgcho 2015.10.08
-                    WQACX(nsp)=WQACX(nsp)-WQALSETX(L,K,nsp)*DTWQO2   ! GEOSR X-species : jgcho 2015.10.08
+                    !{ GEOSR X-species Cyano Sed : jgcho 2016.9.7
+                    if (K.eq.1) then 
+                      if (TAUBCQ.LE.TAUDC(nsp)) THEN  ! Deposite condition
+                        WQACX(nsp)=WQACX(nsp)-WQALSETX(L,K,nsp)*DTWQO2   ! GEOSR X-species : jgcho 2015.10.08
+                        WQCSED(L,nsp)=WQCSED(L,nsp) 
+     &                   + DTWQ*WQALSETX(L,K,nsp)/DZWQ(L)
+     &                   *WQVOX(L,K,nsp) !WQVOX(L,K,nsp) !WQVOXB(L,K,nsp)  DTWQO2
+                      endif
+                      !!!!!!!!!! K=1에서 SINK되는 양을 여기에 한 변수 저장 (L,nsp) !!!!!!!
+                    else
+                      WQACX(nsp)=WQACX(nsp)-WQALSETX(L,K,nsp)*DTWQO2   ! GEOSR X-species : jgcho 2015.10.08
+                    endif
+                    !} GEOSR X-species Cyano Sed : jgcho 2016.9.7
                   ENDIF                                              !{ GEOSR STOKES : YSSONG 2015.08.18  !!!! SINK
                   IF(WQALSETX(L,K,nsp).LT.0.0)THEN                   ! GEOSR X-species : jgcho 2015.10.08
                     IF(K.NE.KC)THEN
@@ -823,6 +851,29 @@ C
                   ENDIF  
                 enddo
               ENDIF  
+
+              !{ GEOSR X-species Cyano Sed : jgcho 2016.9.7
+              do nsp=1,NXSP
+                if (IWQX(nsp).eq.1) then ! cyano
+                  IF(iQSED(nsp).eq.1 .and. K.EQ.1)THEN
+                    if (TAUBCQ.gt.TAUEC(nsp))THEN ! Erosion condition
+                      ERSED=(TAUBCQ-TAUEC(nsp))/TAUEC(nsp)*ERC(nsp)
+     &                    *DTWQO2*86400.
+                      if (ERSED.ge.WQCSED(L,nsp)) ERSED=WQCSED(L,nsp)
+                      WQCSED(L,nsp) = WQCSED(L,nsp) - ERSED
+                      WQRRX(L,nsp)  = WQRRX(L,nsp) + ERSED*DZWQ(L)
+                    endif
+                  endif
+                ENDIF
+              enddo
+              
+!            if (L.eq.136 .and. k.eq.1) then
+!              write(136,'(i8,100e15.7)') n,WQCSED(L,1), ERSED,TAUBCQ
+!     &              ,TAUEC(1),WQALSETX(L,K,1)
+!            endif              
+              
+              !} GEOSR X-species Cyano Sed : jgcho 2016.9.7
+
 !} GEOSR STOKES : YSSONG 2015.08.18 
 C          ENDDO  
 !}

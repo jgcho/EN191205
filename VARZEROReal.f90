@@ -1759,4 +1759,8 @@ SUBROUTINE VARZEROReal
       LightAVG0=0.
 !} GeoSR Bentic-cyano : JHLEE 2015.10.12
 
+!{ GEOSR Cyano Sed : jgcho 2016.08.12
+      WQCSED=0.
+!} GEOSR Cyano Sed : jgcho 2016.08.12
+
 END SUBROUTINE VARZEROReal
