@@ -67,6 +67,15 @@ C
  7103   FORMAT(A,<1000>(3x,i2.2,a,i2.2))
 !} GEOSR GATE : jgcho 2016.07.14
 
+        OPEN(714,FILE='SINK3_C.OUT',STATUS='UNKNOWN')  ! OPEN OLD FILE
+        CLOSE(714,STATUS='DELETE')             ! DELETE OLD FILE
+        OPEN(714,FILE='SINK3_C.OUT',STATUS='UNKNOWN')  ! OPEN NEW FILE
+        WRITE(714,7104) 
+ 7104   FORMAT('       N      TIME  '
+     &        ,<NQCTL>('            CG3            CG4            CG5
+     &            CG6            CG7            CG8'))
+        CLOSE(711)
+
         ISINK=2            ! READY TO WRITE SINK##.OUT 
         SNKW=DTSNK*60./DT  ! WRITING TIME INTERVAL
       ENDIF                ! IF (ISINK.EQ.1) THEN
@@ -102,6 +111,76 @@ C
         
 !        DEPUPG(LG)=DEPUP0/FLOAT(NICMP(LG))   ! UPSTREAM TOTAL DEPTH
         DEPUPG(LG)=HUPG(LG) - SILL(LG)       ! UPSTREAM TOTAL DEPTH (ELEV. - SILL HEIGHT)
+
+!{ READ GC4ADV.INP : jgcho 2019.11.21
+        IF(IGC4.EQ.1) THEN
+          IF(TIMEDAY .GE. GC4DAY) CALL RGC4(TIMEDAY)
+        ENDIF
+!} READ GC4ADV.INP : jgcho 2019.11.21
+!{ SET GC4ADV.INP : jgcho 2019.11.15
+               IF (LGC4) THEN
+        tcdiff=CG3H2(LG)-CG3H1(LG)
+        wctm1=(CG3H2(LG)-DEPUPG(LG))/tcdiff
+        wctm2=(DEPUPG(LG)-CG3H1(LG))/tcdiff
+        CG3(LG)=wctm1*CG3C1(LG) + wctm2*CG3C2(LG)
+        IF (DEPUPG(LG).LT.CG3H1(LG)) THEN
+          CG3(LG)=CG3C1(LG)
+        ELSEIF (DEPUPG(LG).GT.CG3H2(LG)) THEN
+          CG3(LG)=CG3C2(LG)
+        ENDIF
+        
+        tcdiff=CG4H2(LG)-CG4H1(LG)
+        wctm1=(CG4H2(LG)-DEPUPG(LG))/tcdiff
+        wctm2=(DEPUPG(LG)-CG4H1(LG))/tcdiff
+        CG4(LG)=wctm1*CG4C1(LG) + wctm2*CG4C2(LG)
+        IF (DEPUPG(LG).LT.CG4H1(LG)) THEN
+          CG4(LG)=CG4C1(LG)
+        ELSEIF (DEPUPG(LG).GT.CG4H2(LG)) THEN
+          CG4(LG)=CG4C2(LG)
+        ENDIF
+
+        tcdiff=CG5H2(LG)-CG5H1(LG)
+        wctm1=(CG5H2(LG)-DEPUPG(LG))/tcdiff
+        wctm2=(DEPUPG(LG)-CG5H1(LG))/tcdiff
+        CG5(LG)=wctm1*CG5C1(LG) + wctm2*CG5C2(LG)
+        IF (DEPUPG(LG).LT.CG5H1(LG)) THEN
+          CG5(LG)=CG5C1(LG)
+        ELSEIF (DEPUPG(LG).GT.CG5H2(LG)) THEN
+          CG5(LG)=CG5C2(LG)
+        ENDIF
+        
+        tcdiff=CG6H2(LG)-CG6H1(LG)
+        wctm1=(CG6H2(LG)-DEPUPG(LG))/tcdiff
+        wctm2=(DEPUPG(LG)-CG6H1(LG))/tcdiff
+        CG6(LG)=wctm1*CG6C1(LG) + wctm2*CG6C2(LG)
+        IF (DEPUPG(LG).LT.CG6H1(LG)) THEN
+          CG6(LG)=CG6C1(LG)
+        ELSEIF (DEPUPG(LG).GT.CG6H2(LG)) THEN
+          CG6(LG)=CG6C2(LG)
+        ENDIF
+        
+        tcdiff=CG7H2(LG)-CG7H1(LG)
+        wctm1=(CG7H2(LG)-DEPUPG(LG))/tcdiff
+        wctm2=(DEPUPG(LG)-CG7H1(LG))/tcdiff
+        CG7(LG)=wctm1*CG7C1(LG) + wctm2*CG7C2(LG)
+        IF (DEPUPG(LG).LT.CG7H1(LG)) THEN
+          CG7(LG)=CG7C1(LG)
+        ELSEIF (DEPUPG(LG).GT.CG7H2(LG)) THEN
+          CG7(LG)=CG7C2(LG)
+        ENDIF
+        
+        tcdiff=CG8H2(LG)-CG8H1(LG)
+        wctm1=(CG8H2(LG)-DEPUPG(LG))/tcdiff
+        wctm2=(DEPUPG(LG)-CG8H1(LG))/tcdiff
+        CG8(LG)=wctm1*CG8C1(LG) + wctm2*CG8C2(LG)
+        IF (DEPUPG(LG).LT.CG8H1(LG)) THEN
+          CG8(LG)=CG8C1(LG)
+        ELSEIF (DEPUPG(LG).GT.CG8H2(LG)) THEN
+          CG8(LG)=CG8C2(LG)
+        ENDIF
+               ENDIF ! IF (LGC4) THEN
+!} SET GC4ADV.INP : jgcho 2019.11.15
+
       ENDDO                        ! DO LG=1,NGTYPES
 c
       DO LG=1,NQCTL             ! GATE TYPE
@@ -1486,6 +1565,11 @@ C
      &                   ,NS=1,NQCTL)
  7130 FORMAT(I8,F10.5,<NQCTL>(<KC+1>F9.2))
           CLOSE(713)
+
+      OPEN(714,FILE='SINK3_C.OUT',POSITION='APPEND')  ! OPEN NEW FILE
+          WRITE(714,7140) N,TIMEDAY,(CG3(NS),CG4(NS),CG5(NS),CG6(NS)
+     &          ,CG7(NS),CG8(NS),NS=1,NQCTL)
+ 7140 FORMAT(I8,F10.4,<NQCTL*6>F15.6)
 !} GEOSR GATE : jgcho 2016.07.14
 
         ENDIF  ! IF (MOD(FLOAT(N),SNKW).EQ.0.) THEN

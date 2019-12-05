@@ -46,7 +46,7 @@ OBJ0 = DRIFTER.o RWQC1.o Var_Global_Mod.o WINDWAVE.o
 OBJ1 = $(SRC1:for=o)
 OBJ2 = $(SRC2:f90=o)
 
-EXE = NH014_20151113_benthic.x
+EXE = EFDC_NIER_170907_GATECC.x
 
 FCFLAGS = -O3 -xT
 #FCFLAGS = -O3 -xT -r8

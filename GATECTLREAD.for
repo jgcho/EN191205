@@ -120,13 +120,27 @@ C GC10** GATE FLUX MONITORING
 C
       CLOSE(1)
 C
+!{ READ GC4ADV.INP : jgcho 2019.11.15
+      inquire (file='GC4ADV.INP', exist = LGC4)
+      if(.not.LGC4) then
+        PRINT *,'NO FILE GC4ADV.INP'
+        WRITE(7,*) ' '
+        WRITE(7,*) 'NO FILE GC4ADV.INP'
+        WRITE(7,*) ' '
+        IGC4 = 0
+        goto 1003
+      else
+        IGC4 = 1
+      endif
+      !call RGC4(TIMTMP)
       GOTO 1003
+!} READ GC4ADV.INP : jgcho 2019.11.15
 C  
  1000 WRITE(6,1001)  
  1001 FORMAT('  READ ERROR ON FILE GATECTL.INP ')  
       STOP
- 1002 FORMAT(/,'INPUT ECHO NCARD = ',A/)  
 C
+ 1002 FORMAT(/,'INPUT ECHO NCARD = ',A/)  
  1003 CONTINUE
 
 ! { GEOSR ESTURAY DIKE : JGCHO 2010.11.16
@@ -189,6 +203,7 @@ C
 ! } GEOSR ESTURAY DIKE : JGCHO 2010.11.16
  7003 CONTINUE
 
+
       RETURN  
       END  
 
@@ -217,3 +232,63 @@ C
       RETURN
       END
 ! } GEOSR JULIAN DAY : JGCHO 2010.11.16
+
+
+!{ READ GC4ADV.INP : jgcho 2019.11.21
+      SUBROUTINE RGC4(TIMTMP)
+      USE GLOBAL  
+      
+      CHARACTER CCG4CONT*3  
+      OPEN(715,FILE='GC4ADV.INP',STATUS='OLD')  
+      
+      IF(GC4DAY.EQ.0.)THEN    
+        read(715,*)
+        read(715,*)
+        read(715,*)
+      ENDIF
+      
+      PRINT *,'READING GC4ADV.INP',TIMTMP
+      WRITE(7,*) ' '
+      WRITE(7,*) 'READ GC4ADV.INP',TIMTMP
+      WRITE(7,'(a)') '   L     CG3H1     CG3H2     CG3C1     CG3C2
+     &     CG4H1     CG4H2     CG4C1     CG4C2     CG5H1     CG5H2
+     &     CG5C1     CG5C2     CG6H1     CG6H2     CG6C1     CG6C2
+     &     CG7H1     CG7H2     CG7C1     CG7C2     CG8H1     CG8H2
+     &     CG8C1     CG8C2'
+      
+      DO L=1,NQCTL
+          read(715,*,ERR=1100) 
+     &     CG3H1(L),CG3H2(L),CG3C1(L),CG3C2(L)
+     &    ,CG4H1(L),CG4H2(L),CG4C1(L),CG4C2(L)
+     &    ,CG5H1(L),CG5H2(L),CG5C1(L),CG5C2(L)
+     &    ,CG6H1(L),CG6H2(L),CG6C1(L),CG6C2(L)
+     &    ,CG7H1(L),CG7H2(L),CG7C1(L),CG7C2(L)
+     &    ,CG8H1(L),CG8H2(L),CG8C1(L),CG8C2(L)
+      WRITE(7,'(i4,24f10.3)') L
+     &    ,CG3H1(L),CG3H2(L),CG3C1(L),CG3C2(L)
+     &    ,CG4H1(L),CG4H2(L),CG4C1(L),CG4C2(L)
+     &    ,CG5H1(L),CG5H2(L),CG5C1(L),CG5C2(L)
+     &    ,CG6H1(L),CG6H2(L),CG6C1(L),CG6C2(L)
+     &    ,CG7H1(L),CG7H2(L),CG7C1(L),CG7C2(L)
+     &    ,CG8H1(L),CG8H2(L),CG8C1(L),CG8C2(L)
+      ENDDO
+      
+      READ(715,*) GC4DAY, CCG4CONT  
+      WRITE(7,*) GC4DAY, CCG4CONT
+      
+      IF(CCG4CONT.EQ.'END')THEN  
+        WRITE(7,*) 'READ GC4ADV.INP : END'
+        WRITE(7,*) ' '
+        CLOSE(715)  
+        IGC4 = 0  
+      ENDIF  
+      goto 1102
+
+ 1100 WRITE(6,1101)  
+ 1101 FORMAT('  READ ERROR ON FILE GC4ADV.INP ')  
+      STOP
+ 1102 continue
+      
+      RETURN
+      END
+!} READ GC4ADV.INP : jgcho 2019.11.21
