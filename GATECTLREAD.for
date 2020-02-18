@@ -184,10 +184,10 @@ C
           STOP
 !!!!!!!!!! READ PREDICTION TIDE LEVEL : END
         ENDIF
-      ENDDO
-
 ! } GEOSR ESTURAY DIKE : JGCHO 2010.11.16
  7003 CONTINUE
+      ENDDO
+
 
       RETURN  
       END  

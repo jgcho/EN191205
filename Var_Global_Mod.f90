@@ -3933,4 +3933,16 @@
       REAL AGRDAY
       REAL STLDAY
 !} GeoSR ALGAE, SETTLING DAY : jgcho 2016.10.06
+
+!{ GeoSR Diatom, Green algae Salinity TOX : jgcho 2019.11.27
+      INTEGER IWQDGSTOX
+      REAL::WQCOEFSA(2)
+      REAL::WQCOEFSB(2)
+      REAL::WQSALA(2)
+      REAL::WQSALB(2)
+      REAL,ALLOCATABLE::WQCOEFSAX(:)
+      REAL,ALLOCATABLE::WQCOEFSBX(:)
+      REAL,ALLOCATABLE::WQSALAX(:)
+      REAL,ALLOCATABLE::WQSALBX(:)
+!} GeoSR Diatom, Green algae Salinity TOX : jgcho 2019.11.27
       END
