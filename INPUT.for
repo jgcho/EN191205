@@ -3278,7 +3278,7 @@ C
 C **    SKIP OVER TITLE AND AND HEADER LINES  
 C  
               DO IS=1,8  
-                READ(1,*)  
+                READ(1,*)   
               ENDDO  
               READ(1,*)ISALTYP  
               IF(ISALTYP.EQ.0)THEN  
