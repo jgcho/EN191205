@@ -259,8 +259,10 @@ C###########################################################
           IF (DIFEL(LG).GT.0.02) THEN         ! EBB PERIOD
             IF (DELHG(LG).GE.DELHINOUT(LG)
      &         .AND. HUPG(LG).GT.HDWG(LG)) THEN ! UPSTREAM LEVEL HIGHER THAN DOWNSTREAM
-              IF (HUPG(LG).GE.SEL1T   ! SILL(LG) -> SEL1T !GEOSR 2014.12.24 jgcho
-     &           .AND. (HUPG(LG)-SEL1T).GE.DELHSEL1(LG)) THEN  ! UPSTREAM LEVEL HIGHER THAN TARGET LOW LEVEL     ! SILL(LG) -> SEL1T !GEOSR 2014.12.24 jgcho
+              IF ( (NGCHECK(LG).eq.0 .and. HUPG(LG).GT.SEL2T)  ! 수문 개방 조건 1 : 이전 타임스텝에서 닫혀 있고 상류가 SEL2보다 높을때
+     &         .or.(NGCHECK(LG).eq.1 .and. HUPG(LG).GT.SEL1T)  ! 수문 개방 조건 2 : 이전 타임스텝에서 열려 있고 상류가 SEL1보다 높을때
+     &           ) then ! jgcho 2020.05.13 saeman
+!     &           .AND. (HUPG(LG)-SEL1T).GE.DELHSEL1(LG)) THEN  ! UPSTREAM LEVEL HIGHER THAN TARGET LOW LEVEL     ! SILL(LG) -> SEL1T !GEOSR 2014.12.24 jgcho
 C
               ! open time control : jgcho 2010.8.17 temporary
 !              IF (N*DT/86400. .GE. GATEOTM) THEN
@@ -1466,8 +1468,9 @@ C
           OPEN(711,FILE=TRIM(FSINK),POSITION='APPEND')  
           WRITE(711,7110) N,TIMEDAY,(IGCHECK(NS),HUPG(NS),HDWG(NS)
      &                   ,DELHG(NS),(QCTLT(K,NS),K=1,KC),GGQSUM(NS)
-     &                   ,NS=1,NQCTL) !,(GGQSUM(NS),NS=1,NQCTL)
- 7110 FORMAT(I8,F10.4,<NQCTL>(I4,3F8.2,<KC>F8.2,F20.1))
+     &                     ,NGCHECK(NS)
+     &    ,NS=1,NQCTL) !,(GGQSUM(NS),NS=1,NQCTL)
+ 7110 FORMAT(I8,F10.4,<NQCTL>(I4,3F8.2,<KC>F8.2,F20.1,i4))
           CLOSE(711)
 C
           OPEN(712,FILE='SINKT.OUT',POSITION='APPEND')  ! OPEN NEW FILE
