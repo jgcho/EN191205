@@ -771,7 +771,7 @@ C
             
             !{ GEOSR X-species STOKES : jgcho 2015.10.13
               do nsp=1,NXSP
-                if (IWQX(nsp).eq.1) then ! cyano
+!                if (IWQX(nsp).eq.1) then ! cyano  jgcho, jhlee 2020.05.21
                   WQACX(nsp)=(WQPX(L,nsp)-WQBMX(L,nsp)-WQPRX(L,nsp))
      &                       *DTWQO2                                 ! GEOSR X-species : jgcho 2015.10.08
                   WQCSED(L,nsp)=WQCSED(L,nsp) + 
@@ -797,7 +797,7 @@ C
                     ENDIF
                   ENDIF
                   WQKKX(L,nsp) = 1.0 / (1.0 - WQACX(nsp))
-                endif
+!                endif  jgcho, jhlee 2020.05.21
               enddo
             !} GEOSR X-species STOKES : jgcho 2015.10.13                
 
@@ -854,7 +854,7 @@ C
 
               !{ GEOSR X-species Cyano Sed : jgcho 2016.9.7
               do nsp=1,NXSP
-                if (IWQX(nsp).eq.1) then ! cyano
+!                if (IWQX(nsp).eq.1) then ! cyano  jgcho, jhlee 2020.05.21
                   IF(iQSED(nsp).eq.1 .and. K.EQ.1)THEN
                     if (TAUBCQ.gt.TAUEC(nsp))THEN ! Erosion condition
                       ERSED=(TAUBCQ-TAUEC(nsp))/TAUEC(nsp)*ERC(nsp)
@@ -864,7 +864,7 @@ C
                       WQRRX(L,nsp)  = WQRRX(L,nsp) + ERSED*DZWQ(L)
                     endif
                   endif
-                ENDIF
+!                ENDIF   ! jgcho, jhlee 2020.05.21
               enddo
               
 !            if (L.eq.136 .and. k.eq.1) then
