@@ -1898,12 +1898,13 @@ C          DO L=2,LA
               WQA15 = WQA15C+WQA15D+WQA15G  
               IF(IDNOTRVA.GT.0.AND.K.EQ.1)THEN  
                 WQA15 =WQA15 + (WQPNM(L)-1.0)*WQPM(L)*WQANCM  
-     &            *WQVO(L,K,IDNOTRVA)  
+     &            *WQVO(L,K,IDNOTRVA)
               ENDIF  
 !{ GEOSR X-species : jgcho 2015.10.12
               do nsp=1,NXSP
                 WQA15X=(WQPNX(L,nsp)-1.0)*WQPX(L,nsp) * WQANCX(nsp)
-     &                * WQVO(L,K,nsp)  
+     &                * WQVOX(L,K,nsp) ! 2020.6.4 jgcho w/ jhlee  
+!     &                * WQVO(L,K,nsp) ! 2020.6.4 jgcho w/ jhlee  
                 WQA15 = WQA15 + WQA15X
               enddo
 !} GEOSR X-species : jgcho 2015.10.12

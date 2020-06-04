@@ -46,7 +46,7 @@ OBJ0 = DRIFTER.o RWQC1.o Var_Global_Mod.o WINDWAVE.o
 OBJ1 = $(SRC1:for=o)
 OBJ2 = $(SRC2:f90=o)
 
-EXE = EFDC_NIER_170907_sDGsalt_191203.x
+EXE = EFDC_NIER_200604.x
 
 FCFLAGS = -O3 -xT
 #FCFLAGS = -O3 -xT -r8
